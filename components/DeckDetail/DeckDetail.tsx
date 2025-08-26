@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActionIcon,
   Button,
@@ -94,6 +94,8 @@ export function DeckDetail({ deck }: DeckDetailProps) {
   const [currentDeck, setCurrentDeck] = useState<DeckData>(deck);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const questionRefs = useRef<Record<string, HTMLTextAreaElement | null>>({});
+  const [focusCardId, setFocusCardId] = useState<string | null>(null);
 
   useEffect(() => {
     setCurrentDeck(deck);
@@ -128,20 +130,32 @@ export function DeckDetail({ deck }: DeckDetailProps) {
   };
 
   const addCard = () => {
+    const newId = generateId('card');
     setCurrentDeck((prev) => ({
       ...prev,
       updatedAt: Date.now(),
       cards: [
         ...prev.cards,
         {
-          id: generateId('card'),
+          id: newId,
           order: prev.cards.length + 1,
           question: '',
           answer: '',
         },
       ],
     }));
+    setFocusCardId(newId);
   };
+
+  // Focus the newly added card's question textarea
+  useEffect(() => {
+    if (!focusCardId) return;
+    const el = questionRefs.current[focusCardId];
+    if (el) {
+      setTimeout(() => el.focus(), 0);
+      setFocusCardId(null);
+    }
+  }, [focusCardId]);
 
   const moveCard = (id: string, direction: 'up' | 'down') => {
     setCurrentDeck((prev) => {
@@ -249,9 +263,12 @@ export function DeckDetail({ deck }: DeckDetailProps) {
 
   return (
     <Stack mt="xl" gap="md">
-      <Group justify="space-between">
+      <Group justify="space-between" wrap="wrap">
         <Title order={3}>Deck: {currentDeck.topic}</Title>
-        <Group>
+        <Group wrap="wrap">
+          <Button onClick={() => upsertDeck(currentDeck)} variant="outline">
+            Save changes
+          </Button>
           <MantineButton component={Link} href={`/study/${currentDeck.id}`} variant="filled" color="cyan">
             Study with this Deck
           </MantineButton>
@@ -314,6 +331,9 @@ export function DeckDetail({ deck }: DeckDetailProps) {
               autosize
               minRows={2}
               value={card.question}
+              ref={(el) => {
+                questionRefs.current[card.id] = el;
+              }}
               onChange={(e) =>
                 updateCard(card.id, { question: e.currentTarget.value })
               }
@@ -330,6 +350,12 @@ export function DeckDetail({ deck }: DeckDetailProps) {
           </Stack>
         </Card>
       ))}
+
+      <Group justify="flex-end">
+        <Button onClick={() => upsertDeck(currentDeck)} variant="outline">
+          Save changes
+        </Button>
+      </Group>
     </Stack>
   );
 }

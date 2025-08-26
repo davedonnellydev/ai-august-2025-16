@@ -99,16 +99,19 @@ export function StudySession({ deck }: StudySessionProps) {
 
   return (
     <Stack mt="xl" gap="md">
-      <Group justify="space-between" align="center">
+      <Group justify="space-between" align="center" wrap="wrap">
         <Title order={3}>Study: {deck.topic}</Title>
         <Button variant="subtle" onClick={() => router.push('/')}>Back to Dashboard</Button>
       </Group>
 
       {/* Pre-session controls */}
       {!started && (
-        <Card withBorder shadow="sm" padding="md">
+        <Card withBorder shadow="sm" padding="md" component="section" aria-labelledby="study-options">
+          <Title id="study-options" order={4} style={{ position: 'absolute', left: -9999 }}>
+            Study options
+          </Title>
           <Stack gap="md">
-            <Group grow>
+            <Group grow wrap="wrap">
               <SegmentedControl
                 data={[
                   { value: 'ordered', label: 'In order' },
@@ -117,7 +120,7 @@ export function StudySession({ deck }: StudySessionProps) {
                 value={order}
                 onChange={(v) => setOrder(v as StudyOrder)}
               />
-              <Group align="end" gap="sm">
+              <Group align="end" gap="sm" wrap="wrap">
                 <Switch
                   checked={timed}
                   onChange={(e) => setTimed(e.currentTarget.checked)}
@@ -131,6 +134,7 @@ export function StudySession({ deck }: StudySessionProps) {
                   value={secondsPerQuestion}
                   onChange={(v) => setSecondsPerQuestion(Number(v) || 0)}
                   w={160}
+                  aria-label="Seconds per question"
                 />
               </Group>
             </Group>
@@ -152,27 +156,28 @@ export function StudySession({ deck }: StudySessionProps) {
             onStepClick={(idx) => gotoIndex(idx)}
             allowNextStepsSelect={false}
             size="sm"
+            aria-label="Study progress"
           >
             {cards.map((_, idx) => (
-              <Stepper.Step key={idx} />
+              <Stepper.Step key={idx} aria-label={`Question ${idx + 1}`} />
             ))}
           </Stepper>
 
-          <Group justify="space-between" align="center">
+          <Group justify="space-between" align="center" wrap="wrap">
             <Text c="dimmed" size="sm">
               {currentIndex + 1} / {cards.length}
             </Text>
             {timed && (
-              <Group gap="xs" align="center">
-                <Text size="sm">{remaining}s</Text>
-                <Progress value={(remaining / secondsPerQuestion) * 100} w={160} />
+              <Group gap="xs" align="center" aria-live="polite">
+                <Text size="sm" aria-atomic="true">{remaining}s</Text>
+                <Progress value={(remaining / secondsPerQuestion) * 100} w={160} aria-label="Time remaining" />
               </Group>
             )}
           </Group>
 
           <FlipCard question={activeCard.question} answer={activeCard.answer} showAnswer={showAnswer} format={deck.format} />
 
-          <Group justify="space-between">
+          <Group justify="space-between" wrap="wrap">
             <Button variant="light" onClick={onPrev} disabled={currentIndex === 0}>
               Previous
             </Button>
@@ -241,8 +246,8 @@ function FlipCard({ question, answer, showAnswer, format }: FlipCardProps) {
 
   return (
     <div style={containerStyle}>
-      <div style={cardStyle}>
-        <Card withBorder shadow="sm" padding="lg" style={faceStyle}>
+      <div style={cardStyle} role="group" aria-roledescription="flashcard">
+        <Card withBorder shadow="sm" padding="lg" style={faceStyle} aria-hidden={showAnswer}>
           <Stack>
             <Text c="dimmed" size="sm">
               Question
@@ -251,7 +256,7 @@ function FlipCard({ question, answer, showAnswer, format }: FlipCardProps) {
           </Stack>
         </Card>
 
-        <Card withBorder shadow="sm" padding="lg" style={backStyle}>
+        <Card withBorder shadow="sm" padding="lg" style={backStyle} aria-hidden={!showAnswer}>
           <Stack>
             <Text c="dimmed" size="sm">
               Answer

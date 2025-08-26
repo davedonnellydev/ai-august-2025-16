@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import type { DeckData } from '@/components/DeckDetail/DeckDetail';
 import { StudySession } from '@/components/StudySession/StudySession';
-import { Button, Stack, Text } from '@mantine/core';
+import { Button, Container, Stack, Text } from '@mantine/core';
 
 function loadDecks(): DeckData[] {
   try {
@@ -36,9 +36,11 @@ export default function StudyPage() {
   }
 
   return (
-    <div style={{ maxWidth: 900, margin: '20px auto', padding: '20px' }}>
-      <StudySession deck={deck} />
-    </div>
+    <Container size="lg">
+      <div style={{ maxWidth: 900, margin: '20px auto', padding: '20px' }}>
+        <StudySession deck={deck} />
+      </div>
+    </Container>
   );
 }
 
