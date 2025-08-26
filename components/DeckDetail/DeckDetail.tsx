@@ -34,6 +34,7 @@ export interface DeckCard {
 
 export interface DeckData {
   id: string;
+  title?: string;
   topic: string;
   difficulty: Difficulty;
   bloomLevel: BloomLevel;
@@ -264,12 +265,20 @@ export function DeckDetail({ deck }: DeckDetailProps) {
   return (
     <Stack mt="xl" gap="md">
       <Group justify="space-between" wrap="wrap">
-        <Title order={3}>Deck: {currentDeck.topic}</Title>
+        <Title order={3}>Deck: {currentDeck.title || currentDeck.topic}</Title>
         <Group wrap="wrap">
+          <Button component={Link} href="/" variant="subtle">
+            Back to Dashboard
+          </Button>
           <Button onClick={() => upsertDeck(currentDeck)} variant="outline">
             Save changes
           </Button>
-          <MantineButton component={Link} href={`/study/${currentDeck.id}`} variant="filled" color="cyan">
+          <MantineButton
+            component={Link}
+            href={`/study/${currentDeck.id}`}
+            variant="filled"
+            color="cyan"
+          >
             Study with this Deck
           </MantineButton>
           <Button

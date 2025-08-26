@@ -104,7 +104,8 @@ export function NewDeck() {
 
       const deck: DeckData = {
         id: generateId('deck'),
-        topic: parsed?.topic || topic,
+        title: parsed?.topic || 'New Deck',
+        topic: 'General Decks',
         difficulty,
         bloomLevel,
         format,
