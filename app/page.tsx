@@ -1,4 +1,4 @@
-import { NewDeck } from '../components/TopicInput/NewDeck';
+import { NewDeck } from '../components/NewDeck/NewDeck';
 
 export default function HomePage() {
   return (
