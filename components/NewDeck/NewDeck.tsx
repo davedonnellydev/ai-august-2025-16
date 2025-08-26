@@ -15,6 +15,7 @@ import {
 } from '@mantine/core';
 import { ClientRateLimiter } from '@/app/lib/utils/api-helpers';
 import classes from './NewDeck.module.css';
+import { DeckDetail, type DeckData } from '@/components/DeckDetail/DeckDetail';
 
 type InputMode = 'text' | 'markdown';
 type Difficulty = 'easy' | 'medium' | 'difficult' | 'expert';
@@ -31,6 +32,7 @@ export function NewDeck() {
   const [format, setFormat] = useState<Format>('qa');
 
   const [response, setResponse] = useState('');
+  const [generatedDeck, setGeneratedDeck] = useState<DeckData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [remainingRequests, setRemainingRequests] = useState(0);
@@ -76,15 +78,42 @@ export function NewDeck() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.log(errorData);
         throw new Error(errorData.error || 'API call failed');
       }
 
       const result = await response.json();
       setResponse(result.response);
       setRemainingRequests(ClientRateLimiter.getRemainingRequests());
+
+      // Create and persist deck from response
+      const parsed = result.response;
+      const cards = Array.isArray(parsed?.flashcards)
+        ? parsed.flashcards
+            .slice()
+            .sort((a: any, b: any) => a.order - b.order)
+            .map((c: any, idx: number) => ({
+              id: generateId('card'),
+              order: idx + 1,
+              question: c.question,
+              answer: c.answer,
+            }))
+        : [];
+
+      const deck: DeckData = {
+        id: generateId('deck'),
+        topic: parsed?.topic || topic,
+        difficulty,
+        bloomLevel,
+        format,
+        inputType: inputMode,
+        cards,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+
+      setGeneratedDeck(deck);
+      persistDeck(deck);
     } catch (err) {
-      console.error('API error:', err);
       setError(err instanceof Error ? err.message : 'API failed');
     } finally {
       setIsLoading(false);
@@ -100,7 +129,28 @@ export function NewDeck() {
     setFormat('qa');
     setResponse('');
     setError('');
+    setGeneratedDeck(null);
   };
+
+  function generateId(prefix: string = 'id'): string {
+    return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  }
+
+  function persistDeck(deck: DeckData) {
+    try {
+      const raw = localStorage.getItem('decks');
+      const all = raw ? (JSON.parse(raw) as DeckData[]) : [];
+      const idx = all.findIndex((d) => d.id === deck.id);
+      if (idx >= 0) {
+        all[idx] = deck;
+      } else {
+        all.unshift(deck);
+      }
+      localStorage.setItem('decks', JSON.stringify(all));
+    } catch {
+      // ignore persistence errors
+    }
+  }
 
   return (
     <>
@@ -222,7 +272,7 @@ export function NewDeck() {
           </Text>
         )}
 
-        {response && (
+        {response && !generatedDeck && (
           <Text c="dimmed" ta="center" size="lg" maw={580} mx="auto" mt="xl">
             Preview: {JSON.stringify(response)}
           </Text>
@@ -232,6 +282,12 @@ export function NewDeck() {
       <Text c="dimmed" ta="center" size="sm" maw={580} mx="auto" mt="xl">
         You have {remainingRequests} Deck generations remaining.
       </Text>
+
+      {generatedDeck && (
+        <div style={{ maxWidth: 900, margin: '20px auto', padding: '20px' }}>
+          <DeckDetail deck={generatedDeck} />
+        </div>
+      )}
     </>
   );
 }
