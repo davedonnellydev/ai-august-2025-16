@@ -1,0 +1,22 @@
+---
+description: Describes the application's objective and architecture
+globs:
+alwaysApply: false
+---
+
+## Objective
+The app should allow a user to enter any topic and have that topic generate flashcards with questions and answers related to that topic to help the user learn.
+
+## Information Architecture
+### Dashboard (Home)
+Recent decks (stored in localStorage), “Continue studying” CTA, global search, New Deck button
+
+### New Deck (Source Input)
+Tabs: Paste Text | Markdown 
+Options: target deck size, difficulty, Bloom level (remember/understand/apply), format (Q/A, cloze, MCQ).
+
+### Deck Detail
+Cards list - review, replace, delete, add, edit.
+
+### Study Session
+Card view; user grades (Again/Hard/Good/Easy); progress bar;

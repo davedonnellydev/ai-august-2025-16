@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react';
 import { Button, Text, TextInput, Title } from '@mantine/core';
 import { ClientRateLimiter } from '@/app/lib/utils/api-helpers';
-import classes from './Welcome.module.css';
+import classes from './NewDeck.module.css';
 
-export function Welcome() {
+export function NewDeck() {
   const [input, setInput] = useState('');
   const [response, setResponse] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -40,7 +40,9 @@ export function Welcome() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          input,
+          topic: input,
+          difficulty: 'medium',
+          questionCount: 10
         }),
       });
 
@@ -51,6 +53,7 @@ export function Welcome() {
       }
 
       const result = await response.json();
+      console.log(result);
       setResponse(result.response);
 
       // Update remaining requests after successful translation
@@ -113,7 +116,7 @@ export function Welcome() {
 
         {response && (
           <Text c="dimmed" ta="center" size="lg" maw={580} mx="auto" mt="xl">
-            Answer: {response}
+            Answer: {JSON.stringify(response)}
           </Text>
         )}
       </div>
