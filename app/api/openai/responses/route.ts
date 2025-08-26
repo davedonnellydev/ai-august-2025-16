@@ -21,7 +21,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { topic, difficulty, questionCount } = await request.json();
+    const { topic, difficulty, questionCount, bloomLevel, format, inputType } =
+      await request.json();
 
     // Enhanced validation
     const textValidation = InputValidator.validateText(topic, 2000);
@@ -78,13 +79,35 @@ export async function POST(request: NextRequest) {
       topic: z.string(),
     });
 
-    const instructions: string =
-      'You are an expert tutor and quiz generator. You will be given a topic, a difficulty level and a number of questions to generate and you will create that number of question and answer flash cards for the user to test themselves on that topic.';
+    const formatLabelMap: Record<string, string> = {
+      qa: 'question and answer',
+      cloze: 'cloze (fill-in-the-blank)',
+      mcq: 'multiple-choice',
+    };
 
-    const userInput: string = `Please create a set of ${questionCount} flashcards of ${difficulty} difficulty on the topic stated between the two sets of ### below:
+    const inputTypeLabelMap: Record<string, string> = {
+      text: 'topic description',
+      markdown: 'markdown outline',
+    };
+
+    const selectedFormat =
+      formatLabelMap[format as keyof typeof formatLabelMap] ||
+      'question and answer';
+    const selectedInputType =
+      inputTypeLabelMap[inputType as keyof typeof inputTypeLabelMap] ||
+      'topic description';
+
+    const instructions: string =
+      'You are an expert tutor and quiz generator. Create high-quality flashcards with pedagogical alignment to the specified Bloom level and requested card format, while strictly adhering to the provided output schema.';
+
+    const userInput: string = `Please create a set of ${questionCount} flashcards of ${difficulty} difficulty, aligned with Bloom level "${bloomLevel}" and formatted as ${selectedFormat}. Use the ${selectedInputType} between the two sets of ### below as the source:
       ###
       ${topic}
       ###
+      Guidance by format:
+      - For question and answer: produce a clear question and an unambiguous answer.
+      - For cloze (fill-in-the-blank): write the question with a single blank and put the missing term in the answer.
+      - For multiple-choice: include plausible distractors within the question text and put the correct choice as the answer.
       Ensure that the output follows the structured schema provided.
       `;
 
