@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Button,
   Text,
@@ -23,6 +25,7 @@ type BloomLevel = 'remember' | 'understand' | 'apply';
 type Format = 'qa' | 'cloze' | 'mcq';
 
 export function NewDeck() {
+  const router = useRouter();
   const [inputMode, setInputMode] = useState<InputMode>('text');
   const [description, setDescription] = useState('');
   const [outline, setOutline] = useState('');
@@ -101,7 +104,8 @@ export function NewDeck() {
 
       const deck: DeckData = {
         id: generateId('deck'),
-        topic: parsed?.topic || topic,
+        title: parsed?.topic || 'New Deck',
+        topic: 'General Decks',
         difficulty,
         bloomLevel,
         format,
@@ -113,6 +117,8 @@ export function NewDeck() {
 
       setGeneratedDeck(deck);
       persistDeck(deck);
+      // Navigate to Deck Detail automatically
+      router.push(`/decks/${deck.id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'API failed');
     } finally {
@@ -154,6 +160,11 @@ export function NewDeck() {
 
   return (
     <>
+      <div style={{ maxWidth: 900, margin: '20px auto', padding: '0 20px' }}>
+        <Button component={Link} href="/" variant="subtle">
+          Back to Dashboard
+        </Button>
+      </div>
       <Title className={classes.title} ta="center" mt={100}>
         Create a new{' '}
         <Text
