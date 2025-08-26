@@ -12,15 +12,15 @@ jest.mock('../../app/lib/utils/api-helpers', () => ({
 // Mock fetch
 global.fetch = jest.fn();
 
-describe('Welcome component', () => {
+describe('NewDeck component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('renders input field and buttons', () => {
     render(<NewDeck />);
-    expect(screen.getByLabelText('Ask a Question')).toBeInTheDocument();
-    expect(screen.getByText('Ask Question')).toBeInTheDocument();
+    expect(screen.getByLabelText('Topic description')).toBeInTheDocument();
+    expect(screen.getByText('Generate Deck')).toBeInTheDocument();
     expect(screen.getByText('Reset')).toBeInTheDocument();
   });
 
@@ -35,7 +35,7 @@ describe('Welcome component', () => {
     const user = userEvent.setup();
     render(<NewDeck />);
 
-    const input = screen.getByLabelText('Ask a Question');
+    const input = screen.getByLabelText('Topic description');
     await user.type(input, 'Hello world');
 
     expect(input).toHaveValue('Hello world');
@@ -45,11 +45,11 @@ describe('Welcome component', () => {
     const user = userEvent.setup();
     render(<NewDeck />);
 
-    const submitButton = screen.getByText('Ask Question');
+    const submitButton = screen.getByText('Generate Deck');
     await user.click(submitButton);
 
     expect(
-      screen.getByText('Error: Please enter some text to translate')
+      screen.getByText('Error: Please enter a description or outline')
     ).toBeInTheDocument();
   });
 
@@ -57,7 +57,7 @@ describe('Welcome component', () => {
     const user = userEvent.setup();
     render(<NewDeck />);
 
-    const input = screen.getByLabelText('Ask a Question');
+    const input = screen.getByLabelText('Topic description');
     const resetButton = screen.getByText('Reset');
 
     await user.type(input, 'Test input');
