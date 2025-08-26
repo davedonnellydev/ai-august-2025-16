@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import { zodTextFormat } from 'openai/helpers/zod';
+import { z } from 'zod';
 import { MODEL } from '@/app/config/constants';
 import { InputValidator, ServerRateLimiter } from '@/app/lib/utils/api-helpers';
 
@@ -19,10 +21,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { input } = await request.json();
+    const { topic, difficulty, questionCount } = await request.json();
 
     // Enhanced validation
-    const textValidation = InputValidator.validateText(input, 2000);
+    const textValidation = InputValidator.validateText(topic, 2000);
     if (!textValidation.isValid) {
       return NextResponse.json(
         { error: textValidation.error },
@@ -46,7 +48,7 @@ export async function POST(request: NextRequest) {
 
     // Enhanced content moderation
     const moderatedText = await client.moderations.create({
-      input,
+      input: topic,
     });
 
     const { flagged, categories } = moderatedText.results[0];
@@ -64,13 +66,35 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const instructions: string =
-      'You are a helpful assistant who knows general knowledge about the world. Keep your responses to one or two sentances, maximum.';
+    const FlashCard = z.object({
+      question: z.string(),
+      answer: z.string(),
+      order: z.number(),
+    });
 
-    const response = await client.responses.create({
+    const QuestionSet = z.object({
+      flashcards: z.array(FlashCard),
+      difficulty: z.enum(['easy', 'medium', 'difficult', 'expert']),
+      topic: z.string(),
+    });
+
+    const instructions: string =
+      'You are an expert tutor and quiz generator. You will be given a topic, a difficulty level and a number of questions to generate and you will create that number of question and answer flash cards for the user to test themselves on that topic.';
+
+    const userInput: string = `Please create a set of ${questionCount} flashcards of ${difficulty} difficulty on the topic stated between the two sets of ### below:
+      ###
+      ${topic}
+      ###
+      Ensure that the output follows the structured schema provided.
+      `;
+
+    const response = await client.responses.parse({
       model: MODEL,
       instructions,
-      input,
+      input: userInput,
+      text: {
+        format: zodTextFormat(QuestionSet, 'question_set'),
+      },
     });
 
     if (response.status !== 'completed') {
@@ -78,8 +102,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
-      response: response.output_text || 'Response recieved',
-      originalInput: input,
+      response: response.output_parsed || 'Response recieved',
       remainingRequests: ServerRateLimiter.getRemaining(ip),
     });
   } catch (error) {

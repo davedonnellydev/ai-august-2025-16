@@ -1,9 +1,9 @@
-import { Welcome } from '../components/Welcome/Welcome';
+import { NewDeck } from '../components/NewDeck/NewDeck';
 
 export default function HomePage() {
   return (
     <>
-      <Welcome />
+      <NewDeck />
     </>
   );
 }
