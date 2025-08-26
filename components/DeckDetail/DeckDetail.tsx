@@ -18,6 +18,8 @@ import {
   IconTrash,
 } from '@tabler/icons-react';
 import { ClientRateLimiter } from '@/app/lib/utils/api-helpers';
+import Link from 'next/link';
+import { Button as MantineButton } from '@mantine/core';
 
 type Difficulty = 'easy' | 'medium' | 'difficult' | 'expert';
 type BloomLevel = 'remember' | 'understand' | 'apply';
@@ -250,6 +252,9 @@ export function DeckDetail({ deck }: DeckDetailProps) {
       <Group justify="space-between">
         <Title order={3}>Deck: {currentDeck.topic}</Title>
         <Group>
+          <MantineButton component={Link} href={`/study/${currentDeck.id}`} variant="filled" color="cyan">
+            Study with this Deck
+          </MantineButton>
           <Button
             leftSection={<IconRefresh size={16} />}
             onClick={regenerateDeck}
