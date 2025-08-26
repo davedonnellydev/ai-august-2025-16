@@ -27,7 +27,7 @@ describe('NewDeck component', () => {
   it('displays remaining requests count', () => {
     render(<NewDeck />);
     expect(
-      screen.getByText(/You have \d+ questions remaining/)
+      screen.getByText(/You have \d+ Deck generations remaining/)
     ).toBeInTheDocument();
   });
 
