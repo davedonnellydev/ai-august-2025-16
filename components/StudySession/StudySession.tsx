@@ -45,7 +45,9 @@ export function StudySession({ deck }: StudySessionProps) {
 
   // Reset when starting or when cards change
   useEffect(() => {
-    if (!started) return;
+    if (!started) {
+      return;
+    }
     setCurrentIndex(0);
     setShowAnswer(false);
     setRemaining(secondsPerQuestion);
@@ -53,7 +55,9 @@ export function StudySession({ deck }: StudySessionProps) {
 
   // Handle timer per question
   useEffect(() => {
-    if (!started || !timed) return;
+    if (!started || !timed) {
+      return;
+    }
     if (timerRef.current) {
       clearInterval(timerRef.current);
     }
@@ -92,10 +96,6 @@ export function StudySession({ deck }: StudySessionProps) {
   const onNext = () => gotoIndex(currentIndex + 1);
 
   const activeCard = cards[currentIndex];
-  const progressPct = useMemo(() => {
-    if (cards.length === 0) return 0;
-    return Math.round(((currentIndex + 1) / cards.length) * 100);
-  }, [currentIndex, cards.length]);
 
   return (
     <Stack mt="xl" gap="md">

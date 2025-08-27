@@ -105,8 +105,12 @@ export default function HomePage() {
 
   const createTopic = () => {
     const name = newTopicName.trim();
-    if (!name) return;
-    if (topics.find((t) => t.name.toLowerCase() === name.toLowerCase())) return;
+    if (!name) {
+      return;
+    }
+    if (topics.find((t) => t.name.toLowerCase() === name.toLowerCase())) {
+      return;
+    }
     const next = [...topics, { id: generateId('topic'), name }];
     setTopics(next);
     saveTopics(next);
@@ -129,7 +133,9 @@ export default function HomePage() {
 
   const deleteTopic = (topicId: string) => {
     const topic = topics.find((t) => t.id === topicId);
-    if (!topic || topic.name === 'General Decks') return;
+    if (!topic || topic.name === 'General Decks') {
+      return;
+    }
 
     const nextTopics = topics.filter((t) => t.id !== topicId);
     setTopics(nextTopics);

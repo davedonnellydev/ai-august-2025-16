@@ -25,3 +25,16 @@ class ResizeObserver {
 }
 
 window.ResizeObserver = ResizeObserver;
+
+// Mock Next.js app router APIs used in components
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    prefetch: jest.fn(),
+    back: jest.fn(),
+    forward: jest.fn(),
+  }),
+  useParams: jest.fn(() => ({})),
+  usePathname: jest.fn(() => '/'),
+}));

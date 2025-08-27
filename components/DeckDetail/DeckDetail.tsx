@@ -19,7 +19,6 @@ import {
 } from '@tabler/icons-react';
 import { ClientRateLimiter } from '@/app/lib/utils/api-helpers';
 import Link from 'next/link';
-import { Button as MantineButton } from '@mantine/core';
 
 type Difficulty = 'easy' | 'medium' | 'difficult' | 'expert';
 type BloomLevel = 'remember' | 'understand' | 'apply';
@@ -150,10 +149,12 @@ export function DeckDetail({ deck }: DeckDetailProps) {
 
   // Focus the newly added card's question textarea
   useEffect(() => {
-    if (!focusCardId) return;
+    if (!focusCardId) {
+      return;
+    }
     const el = questionRefs.current[focusCardId];
     if (el) {
-      setTimeout(() => el.focus(), 0);
+      el.focus();
       setFocusCardId(null);
     }
   }, [focusCardId]);
@@ -273,14 +274,14 @@ export function DeckDetail({ deck }: DeckDetailProps) {
           <Button onClick={() => upsertDeck(currentDeck)} variant="outline">
             Save changes
           </Button>
-          <MantineButton
+          <Button
             component={Link}
             href={`/study/${currentDeck.id}`}
             variant="filled"
             color="cyan"
           >
             Study with this Deck
-          </MantineButton>
+          </Button>
           <Button
             leftSection={<IconRefresh size={16} />}
             onClick={regenerateDeck}
