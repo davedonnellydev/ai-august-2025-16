@@ -6,19 +6,24 @@
 **🎯 Project Objective**: Enter a topic, AI generates flashcards.  
 **🚀 Features**: Enter topic; AI creates Q&A flashcards; Flip to reveal answer; User can set level of difficulty.  
 **🛠️ Tech used**: Next.js, TypeScript, Mantine UI, OpenAI APIs  
-**▶️ Live Demo**: _[https://your-demo-url.com](https://your-demo-url.com)_  
-_(Link will be added after deployment)_
+**▶️ Live Demo**: [https://dave-donnelly-ai-august-16.netlify.app/](https://dave-donnelly-ai-august-16.netlify.app/)  
 
 ## 🗒️ Summary
 
-**Lessons learned**  
-_A little summary of learnings_
+This project was a simple but useful one: an app that generates **question-and-answer flashcards** on any topic provided by the user.  
 
-**Blockers**  
-_Note any blockers here_
+Because of other job-hunt activities, I started late in the day — but still managed to get to a solid MVP. The key was breaking the project into smaller pieces and using Cursor AI to focus on each part individually, while keeping the overall flow in mind. A big help was adding a **Cursor “rule” document** containing the app’s architecture and objective. With that context, Cursor’s code suggestions were more accurate and only needed minor tweaks.  
+
+The main concern I came away with was around **trusting AI-generated code**. When I started this challenge, I promised myself I’d only use code I understood. And while I usually do, the time crunch sometimes tempts me to rely on user testing to confirm functionality without scrutinising the code itself. This is a risky habit to slip into. While I’m glad this challenge is almost over, it leaves me curious about how developers balance speed and scrutiny in real-world projects where time pressure is real.  
+
+**Lessons learned**  
+- Breaking projects into smaller, staged chunks makes collaboration with AI smoother.  
+- Cursor “rules” are a powerful way to guide AI with project context.  
+- Time pressure can encourage shortcuts — but it’s important to maintain discipline around code review and understanding.  
 
 **Final thoughts**  
-_Any final thoughts here_
+A simple but effective project, and another reminder that while AI speeds things up, responsibility for code quality and maintainability still rests with me.  
+
 
 This project has been built as part of my AI August App-A-Day Challenge. You can read more information on the full project here: [https://github.com/davedonnellydev/ai-august-2025-challenge](https://github.com/davedonnellydev/ai-august-2025-challenge).
 
